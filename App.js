@@ -9,7 +9,8 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  Alert
 } from 'react-native';
 
 import Camera from 'react-native-camera';
@@ -32,7 +33,7 @@ export default class App extends Component<{}> {
     this._sendImage = this._sendImage.bind(this);
   }
   _sendImage(image) {
-    const panpan = "https://reservamoseto.herokuapp.com/image";
+    const panpan = "https://cansrecognition.herokuapp.com/cans";
     return fetch(panpan, {
       method: "POST",
       headers: {
@@ -40,13 +41,13 @@ export default class App extends Component<{}> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        image: image
+        img: image
       })
     })
       .then((response) => response.json())
       .then((responseJson) => {
-        this.setState({soda: responseJson});
-        Alert.alert(`You found a ${responseJson}`);
+        this.setState({soda: responseJson.result});
+        Alert.alert(`You found a ${responseJson.result}`);
       })
       .catch((error) => {
         console.error(error);
@@ -62,7 +63,7 @@ export default class App extends Component<{}> {
         RNFetchBlob.fs.readFile(datData.mediaUri, 'base64')
         .then((blober) => {
           let imageBlob = `data:image/jpg;base64,${blober}`;
-          console.log(imageBlob);
+          this._sendImage(imageBlob);
         })
       })
       .catch(err => console.error(err));
