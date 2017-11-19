@@ -34,6 +34,7 @@ export default class App extends Component<{}> {
   }
   _sendImage(image) {
     const panpan = "https://cansrecognition.herokuapp.com/cans";
+    // const panpan = "http://192.168.43.151:5000/cans";
     return fetch(panpan, {
       method: "POST",
       headers: {
@@ -46,8 +47,20 @@ export default class App extends Component<{}> {
     })
       .then((response) => response.json())
       .then((responseJson) => {
-        this.setState({soda: responseJson.result});
-        Alert.alert(`You found a ${responseJson.result}`);
+        this.setState({soda: responseJson});
+        let manzanita = responseJson.manzanita.toFixed(2);
+        let sevenup = responseJson['7up'].toFixed(2);
+        let pepsi = responseJson.pepsi.toFixed(2);
+        if(manzanita < 0.4) {
+          manzanita = 0;
+        }
+        if(sevenup < 0.4) {
+          sevenup = 0;
+        }
+        if(pepsi < 0.4) {
+          pepsi = 0;
+        }
+        Alert.alert(`You found a can wich looks ${manzanita}(manzanita),${sevenup}(7up),${pepsi}(pepsi)`);
       })
       .catch((error) => {
         console.error(error);
@@ -62,7 +75,7 @@ export default class App extends Component<{}> {
         const datData = data;
         RNFetchBlob.fs.readFile(datData.mediaUri, 'base64')
         .then((blober) => {
-          let imageBlob = `data:image/jpg;base64,${blober}`;
+          let imageBlob = `${blober}`;
           this._sendImage(imageBlob);
         })
       })
