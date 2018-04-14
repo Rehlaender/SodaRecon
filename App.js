@@ -77,16 +77,10 @@ export default class App extends Component<{}> {
     if(!this.state.loading) {
       return (
         <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[CAPTURE]</Text>
-        // <TouchableHighlight onPress={this.takePicture.bind(this)}>
-        //   <Image
-        //     style={{width: 50, height: 50}}
-        //     source={require('./img/camera-icon.png')}
-        //   />
-        // </TouchableHighlight>
       );
     } else {
       return (
-        <Text style={styles.capture}>loading</Text>
+        <Text style={styles.loading}>loading</Text>
       );
     }
   }
@@ -110,15 +104,14 @@ export default class App extends Component<{}> {
   render() {
     return (
       <View style={styles.container}>
-      <Camera
-        ref={(cam) => {
-          this.camera = cam;
-        }}
-        style={styles.preview}
-        aspect={Camera.constants.Aspect.fill}>
-        {this._toggleByLoading()}
-      </Camera>
-
+        <Camera
+          ref={(cam) => {
+            this.camera = cam;
+          }}
+          style={styles.preview}
+          aspect={Camera.constants.Aspect.fill}>
+          {this._toggleByLoading()}
+        </Camera>
       </View>
     );
   }
