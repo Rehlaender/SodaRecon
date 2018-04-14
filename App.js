@@ -13,7 +13,8 @@ import {
   Alert,
   Image,
   TouchableHighlight,
-  Animated
+  Animated,
+  TextInput
 } from 'react-native';
 
 import Camera from 'react-native-camera';
@@ -31,16 +32,18 @@ export default class App extends Component<{}> {
     super(props);
     this.state = {
       soda: '',
-      loading: false
+      loading: false,
+      ip: ''
     }
 
     this._sendImage = this._sendImage.bind(this);
     this._toggleByLoading = this._toggleByLoading.bind(this);
   }
   _sendImage(image) {
-    const panpan = "https://cansrecognition.herokuapp.com/cans";
+    // const panpan = "https://cansrecognition.herokuapp.com/cans";
+    const pabellonIp = "http://192.168.43.180:5000/recognition";
     // const panpan = "http://192.168.43.151:5000/cans";
-    return fetch(panpan, {
+    return fetch(pabellonIp, {
       method: "POST",
       headers: {
         'Accept': 'application/json',
@@ -53,20 +56,9 @@ export default class App extends Component<{}> {
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({soda: responseJson});
-        let manzanita = responseJson.manzanita.toFixed(2);
-        let sevenup = responseJson['7up'].toFixed(2);
-        let pepsi = responseJson.pepsi.toFixed(2);
-        if(manzanita < 0.4) {
-          manzanita = 0;
-        }
-        if(sevenup < 0.4) {
-          sevenup = 0;
-        }
-        if(pepsi < 0.4) {
-          pepsi = 0;
-        }
         this.setState({loading: !this.state.loading});
-        Alert.alert(`You found a can wich looks ${manzanita}(manzanita),${sevenup}(7up),${pepsi}(pepsi)`);
+        console.log(responseJson, '========!');
+        Alert.alert(`${this.state.soda}`);
       })
       .catch((error) => {
         console.error(error);
@@ -76,11 +68,11 @@ export default class App extends Component<{}> {
   _toggleByLoading() {
     if(!this.state.loading) {
       return (
-        <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[CAPTURE]</Text>
+          <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[asdfu] {this.state.soda[0]}</Text>
       );
     } else {
       return (
-        <Text style={styles.loading}>loading</Text>
+          <Text style={styles.capture}>loading</Text>
       );
     }
   }
@@ -110,7 +102,10 @@ export default class App extends Component<{}> {
           }}
           style={styles.preview}
           aspect={Camera.constants.Aspect.fill}>
-          {this._toggleByLoading()}
+
+          { this._toggleByLoading() }
+
+
         </Camera>
       </View>
     );
@@ -120,7 +115,19 @@ export default class App extends Component<{}> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
+  },
+  ipLabel: {
+    color: '#fff',
+    fontWeight: 'bold',
+    backgroundColor: 'transparent'
+  },
+  ipInput: {
+    width: '900%',
+    color: '#fff',
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+
   },
   preview: {
     flex: 1,
