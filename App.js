@@ -10,7 +10,10 @@ import {
   StyleSheet,
   Text,
   View,
-  Alert
+  Alert,
+  Image,
+  TouchableHighlight,
+  Animated
 } from 'react-native';
 
 import Camera from 'react-native-camera';
@@ -28,9 +31,11 @@ export default class App extends Component<{}> {
     super(props);
     this.state = {
       soda: '',
+      loading: false
     }
 
     this._sendImage = this._sendImage.bind(this);
+    this._toggleByLoading = this._toggleByLoading.bind(this);
   }
   _sendImage(image) {
     const panpan = "https://cansrecognition.herokuapp.com/cans";
@@ -60,6 +65,7 @@ export default class App extends Component<{}> {
         if(pepsi < 0.4) {
           pepsi = 0;
         }
+        this.setState({loading: !this.state.loading});
         Alert.alert(`You found a can wich looks ${manzanita}(manzanita),${sevenup}(7up),${pepsi}(pepsi)`);
       })
       .catch((error) => {
@@ -67,9 +73,27 @@ export default class App extends Component<{}> {
       });
   }
 
+  _toggleByLoading() {
+    if(!this.state.loading) {
+      return (
+        <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[CAPTURE]</Text>
+        // <TouchableHighlight onPress={this.takePicture.bind(this)}>
+        //   <Image
+        //     style={{width: 50, height: 50}}
+        //     source={require('./img/camera-icon.png')}
+        //   />
+        // </TouchableHighlight>
+      );
+    } else {
+      return (
+        <Text style={styles.capture}>loading</Text>
+      );
+    }
+  }
+
   takePicture() {
     const options = {};
-    //options.location = ...
+    this.setState({loading: !this.state.loading});
     this.camera.capture({metadata: options})
       .then((data) => {
         const datData = data;
@@ -80,19 +104,21 @@ export default class App extends Component<{}> {
         })
       })
       .catch(err => console.error(err));
+
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Camera
-          ref={(cam) => {
-            this.camera = cam;
-          }}
-          style={styles.preview}
-          aspect={Camera.constants.Aspect.fill}>
-          <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[CAPTURE]</Text>
-        </Camera>
+      <Camera
+        ref={(cam) => {
+          this.camera = cam;
+        }}
+        style={styles.preview}
+        aspect={Camera.constants.Aspect.fill}>
+        {this._toggleByLoading()}
+      </Camera>
+
       </View>
     );
   }
@@ -115,5 +141,10 @@ const styles = StyleSheet.create({
     color: '#000',
     padding: 10,
     margin: 40
+  },
+  loading: {
+    flex: 1,
+    backgroundColor: '#fff',
+    color: '#ccc',
   }
 });
