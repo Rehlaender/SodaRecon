@@ -41,9 +41,10 @@ export default class App extends Component<{}> {
   }
   _sendImage(image) {
     // const panpan = "https://cansrecognition.herokuapp.com/cans";
-    const pabellonIp = "http://192.168.43.180:5000/recognition";
+    // const pabellonIp = "http://192.168.43.180:5000/recognition";
     // const panpan = "http://192.168.43.151:5000/cans";
-    return fetch(pabellonIp, {
+    const recognitionApi = "https://test-flask-201421.appspot.com/recognition";
+    return fetch(recognitionApi, {
       method: "POST",
       headers: {
         'Accept': 'application/json',
@@ -58,7 +59,13 @@ export default class App extends Component<{}> {
         this.setState({soda: responseJson});
         this.setState({loading: !this.state.loading});
         console.log(responseJson, '========!');
-        Alert.alert(`${this.state.soda}`);
+        if(this.state.soda.length > 0) {
+            Alert.alert(`person:${this.state.soda[0].name}`, `prob:${this.state.soda[0].prob}, \ncords{x:${this.state.soda[0].cords.x},y:${this.state.soda[0].cords.y},w:${this.state.soda[0].cords.w}, h:${this.state.soda[0].cords.h}}`);
+        }
+         
+        else {
+            Alert.alert(`Couldn't find a face`);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -68,11 +75,11 @@ export default class App extends Component<{}> {
   _toggleByLoading() {
     if(!this.state.loading) {
       return (
-          <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[asdfu] {this.state.soda[0]}</Text>
+          <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[ take picture! ]</Text>
       );
     } else {
       return (
-          <Text style={styles.capture}>loading</Text>
+          <Text style={styles.capture}>*loading*</Text>
       );
     }
   }
